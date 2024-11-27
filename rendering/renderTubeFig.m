@@ -1,15 +1,13 @@
-function renderTube(x, y, z, tag)
-    
+function renderTubeFig(x, y, z, tag)
+    scale = 3;
+
     if strcmp(tag, 'wire')
-        radius = 0.01;
+        radius = 0.0025 * scale;
         color = '#9cca36';
         % color = '#06402B';
         alpha = 1;
-        if ~isempty(figToDelete)
-            delete(figToDelete);
-        end
     elseif strcmp(tag, 'vessel')
-        radius = 0.05;
+        radius = 0.01 * scale;
         color = '#da5053';
         color = 'red';
         alpha = 0.25;

@@ -1,83 +1,97 @@
+%% Clear cache
 clear;clc;close all
 
+%% Initilize the figure
+FONT = 'Arial';
+FONTSIZE = 10;
+pWidth = 7; % inches
+pHeight = pWidth * 3/4;
+
+%% Extract data and plot
 % Define the relative path to the datafile directory
-datafileDir = fullfile('..', 'mag_tube_after' ,'datafiles');
+datafileDir = fullfile('simFiles' ,'case3');
 
 % Get all .txt files in the directory
-txtFiles = dir(fullfile(datafileDir, '*.txt'));
+rodFiles = dir(fullfile(datafileDir, 'simDER_time*.txt'));
+tubeFile = dir(fullfile(datafileDir, 'tube.txt'));
 
 % Construct the full path for the current file
-filePath = fullfile(datafileDir, txtFiles.name);
-
-% Display the filename (optional)
-fprintf('Reading file: %s\n', filePath);
+filePath = fullfile(datafileDir, tubeFile.name);
 
 % Read the file (modify based on file content)
 data = readmatrix(filePath);
-   
-% Extract the first column (time)
-timeColumn = data(:, 1);
 
-% Find unique times and their counts
-[uniqueTimes, ~, timeIndices] = unique(timeColumn);
+x_tube = data(:, 1);
+y_tube = data(:, 2);
+z_tube = data(:, 3); 
 
-% Number of nodes is the count of rows for the first unique time
-numNodes = sum(timeIndices == 1);
-numSteps = length(timeColumn) / numNodes;
+h = figure(1);
+axes_length = 0.25;
 
-figure(1)
-% title('Smooth Rod');
-xlabel('X');
-ylabel('Y');
-zlabel('Z');
+% Predefine axis limits and view angle
+xLimits = [-axes_length, axes_length]; % Adjust as needed
+yLimits = [-axes_length, axes_length]; % Adjust as needed
+zLimits = [-axes_length, axes_length]; % Adjust as needed
+viewAngle = [45, 45]; % Azimuth and elevation
 
+% Case 1
+xLimits = [-0.8, 0.25]; % Adjust as needed
+yLimits = [-0.05, 0.45]; % Adjust as needed
+zLimits = [-0.05, 0.05]; % Adjust as needed
+viewAngle = [45, 45]; % Azimuth and elevation
 
-% Initialize parameters
-tubeNv = 400; % Number of vertices (replace with your actual value)
-deltaLen = 2 * pi / (10 * tubeNv);
+% Case 2
+xLimits = [-0.6, 0.6]; % Adjust as needed
+yLimits = [-0.25, 0.05]; % Adjust as needed
+zLimits = [-0.05, 0.05]; % Adjust as needed
+viewAngle = [45, 45]; % Azimuth and elevation
 
-% Preallocate the matrix to store tubeNode data
-tubeNode = zeros(tubeNv, 3); % Assuming 3 columns for x, y, z coordinates
+% Case 3
+xLimits = [-0.8, 0.15]; % Adjust as needed
+yLimits = [-0.05, 0.25]; % Adjust as needed
+zLimits = [-0.05, 0.2]; % Adjust as needed
+viewAngle = [45, 10]; % Azimuth and elevation
 
-% Populate the tubeNode matrix
-for i = 1:tubeNv
-    tubeNode(i, 1) = deltaLen * i; % x-coordinate
-    tubeNode(i, 2) = 0.1 * cos(deltaLen * 10 * i) - 0.1; % y-coordinate
-    tubeNode(i, 3) = 0.0; % z-coordinate
+for i = 1:length(rodFiles)
+
+    subplot(2, length(rodFiles)/2,i)
+    hold on
+
+    splitStr = split(rodFiles(i).name, '_');
+    timePart = splitStr{3};
+    time = erase(timePart, '.txt');
+    time = str2double(time);
+    
+    % Construct the full path for the current file
+    filePath = fullfile(datafileDir, rodFiles(i).name);
+    
+    % Read the file (modify based on file content)
+    data = readmatrix(filePath);
+    
+    x = data(:, 1);
+    y = data(:, 2);
+    z = data(:, 3); 
+    
+    renderTubeFig(x_tube, y_tube, z_tube, 'vessel')
+    renderTubeFig(x, y, z, 'wire')
+
+    title(sprintf('Time = %.2f', time), 'interpreter', 'latex', 'FontSize', FONTSIZE)
+    
+    view(viewAngle)
+    camlight('headlight');  % Add default headlight for better visualization
+    lighting phong;
+
+    axis equal
+    axis([xLimits, yLimits, zLimits]) % Set fixed axis limits
+    axis off
+    hold off
 end
 
-renderTube(tubeNode(:,1), tubeNode(:,2), tubeNode(:,3), 'vessel')
-hold on
+%% Save the figure
+set(gca, 'FontName', FONT, 'FontSize', FONTSIZE, 'TickLabelInterpreter','latex');
+set(gcf, 'PaperUnits', 'inches', 'PaperPosition', [0 0 pWidth pHeight], ...
+    'PaperSize', [pWidth pHeight]);
 
-axe_length = 0.75;
-grid on;
-axis equal
-axis off
-view(45,45)
-camlight('headlight');  % Add default headlight for better visualization
-% light('Position', [1.0 1.0 1.0], 'Style', 'infinite', 'Color', [0.5, 0.5, 0.5]);  % Light source in positive z-axis
-lighting phong;
-
-
-% xlim([-axe_length/2,axe_length/2])
-% ylim([-axe_length/2,axe_length/2])
-% zlim([-axe_length/2,axe_length/2])
-
-for i = 1:18:numSteps
-    
-    startIndex = numNodes * (i - 1) + 1;
-    endIndex = numNodes * i;
-    
-    x = data(startIndex:endIndex, 2);
-    y = data(startIndex:endIndex, 3);
-    z = data(startIndex:endIndex, 4); 
-
-    renderTube(x, y, z, 'wire')
-
-    
-    % legend('Blood vessel', 'Guidewire', 'Magnetized head')
-
-    exportgraphics(gcf, 'sim_after.gif', "Append",true, 'Resolution',300)  % 300 DPI
-    % drawnow
-end
-
+%% Save the figure
+% saveas(h, '1.pdf');
+print(h, '3.pdf', '-dpdf', '-r900');  % Change '-r300' to higher DPI if needed
