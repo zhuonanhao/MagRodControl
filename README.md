@@ -1,9 +1,11 @@
 # Physics-based modeling and control of a magnetically-actuated continuum guidewire moving in blood vessels
 
+## Simulation
 <div align="center">
   <img src="assets/anime.gif" alt="Simulation">
 </div>
 
+## Test cases
 <div align="center">
   <img src="assets/1.jpg" alt="Case 1">
 </div>
