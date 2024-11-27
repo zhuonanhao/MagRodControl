@@ -5,13 +5,12 @@
 </div>
 
 <div align="center">
-  <img src="assets/1.png" alt="Case 1">
+  <img src="assets/1.jpg" alt="Case 1">
 </div>
 
 <div align="center">
-  <img src="assets/2.png" alt="Case 2">
+  <img src="assets/2.jpg" alt="Case 2">
 </div>
 
 <div align="center">
-  <img src="assets/3.png" alt="Case 3">
-</div>
+  <img src="assets/3.jpg" alt="Case 3">
