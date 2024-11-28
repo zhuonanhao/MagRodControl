@@ -17,7 +17,7 @@
 <div align="center">
   <img src="assets/3.jpg" alt="Case 3">
 
-
+```code
 function ba = getBa(qOld, dt, qCons, m, u, consInd, ...
                     ScaleSolver, tol, maximum_iter, ...
                     EI, EA, R, ne, refLen, mg, Nodes, ba, br)
@@ -78,3 +78,4 @@ function ba = getBa(qOld, dt, qCons, m, u, consInd, ...
                 max_iter, grad_norm);
     end
 end
+```
